@@ -4,8 +4,20 @@ import { ArrowUpRight } from "lucide-react";
 
 const PROJECTS = [
   {
+    title: "The Vault.",
+    description: "The Vault is a secure, end-to-end asset repository built on Sui. Engineered for security and speed, it provides a streamlined environment for users to organize, track, and safeguard their most important data.",
+    tech: ["Sui Move", "NextJS", "TypeScript", "Tailwind CSS", "Lucide React"],
+    link: "https://github.com/ramosdalrymple-afk/nft-dynamic-badge.git",
+  },
+  {
+    title: "NFT Dynamic Badge",
+    description: "A blockchain-based system for issuing Dynamic NFTs as badges. Unlike traditional static NFTs, these badges evolve, level up, and change their appearance based on on-chain activities, off-chain milestones, or time-based triggers.",
+    tech: ["Sui Move", "React", "TypeScript", "Tailwind CSS"],
+    link: "https://github.com/ramosdalrymple-afk/nft-dynamic-badge.git",
+  },
+  {
     title: "Glitch Freak NFT Marketplace",
-    description: "A specialized NFT platform built on the Sui blockchain. Features unique genetic sequences and on-chain volatility attributes for 'freak-themed' digital assets.",
+    description: "A specialized NFT marketplace platform built on the Sui blockchain. Features unique genetic sequences and on-chain volatility attributes for 'freak-themed' digital assets.",
     tech: ["Sui Move", "React", "TypeScript", "Tailwind CSS"],
     link: "https://github.com/ramosdalrymple-afk/glitch-freak-nft-marketplace",
   },
