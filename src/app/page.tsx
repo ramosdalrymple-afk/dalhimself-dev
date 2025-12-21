@@ -69,7 +69,7 @@ export default function Home() {
           <section className="space-y-4">
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">About</h2>
             <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-prose">
-              I am a <span className="text-zinc-900 dark:text-white font-medium">Software Developer and IT student</span> dedicated to developing high-performance digital products. Specialized in <span className="text-zinc-900 dark:text-white font-medium">decentralized systems and mobile innovation</span>, I thrive on translating complex technical challenges into seamless, user-centric experiences.
+              I am a <span className="text-zinc-900 dark:text-white font-medium">Full-Stack Developer and IT student</span> dedicated to developing high-performance digital products. Specialized in <span className="text-zinc-900 dark:text-white font-medium">decentralized systems and mobile innovation</span>, I thrive on translating complex technical challenges into seamless, user-centric experiences.
             </p>
           </section>
 
