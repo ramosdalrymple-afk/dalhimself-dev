@@ -4,10 +4,16 @@ import { ArrowUpRight } from "lucide-react";
 
 const PROJECTS = [
   {
+    title: "Orbital Foundry",
+    description: "A high-fidelity, industrial-grade decentralized application for materializing and managing aerospace assets on the Sui Network. Orbital Foundry utilizes on-chain randomness to unseal secure deployment modules, revealing cryptographically unique aerospace components.",
+    tech: ["Sui Move", "TypeScript", "NextJS", "Tailwind CSS", "Lucide React"],
+    link: "https://github.com/ramosdalrymple-afk/orbital-foundry.git",
+  },
+  {
     title: "The Vault.",
     description: "The Vault is a secure, end-to-end asset repository built on Sui. Engineered for security and speed, it provides a streamlined environment for users to organize, track, and safeguard their most important data.",
     tech: ["Sui Move", "NextJS", "TypeScript", "Tailwind CSS", "Lucide React"],
-    link: "https://github.com/ramosdalrymple-afk/nft-dynamic-badge.git",
+    link: "https://github.com/ramosdalrymple-afk/vault-sui-escrow.git",
   },
   {
     title: "NFT Dynamic Badge",
