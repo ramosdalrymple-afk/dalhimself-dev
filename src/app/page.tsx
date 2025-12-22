@@ -1,6 +1,9 @@
+'use client'; // Required for useState
+
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { useState } from "react"; // Added
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react"; // Added icons
 
 const PROJECTS = [
   {
@@ -42,8 +45,24 @@ const PROJECTS = [
 ];
 
 export default function Home() {
+  // --- PAGINATION LOGIC ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsPerPage = 4;
+
+  const totalPages = Math.ceil(PROJECTS.length / projectsPerPage);
+  const indexOfLastProject = currentPage * projectsPerPage;
+  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+  const currentProjects = PROJECTS.slice(indexOfFirstProject, indexOfLastProject);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
-    /* Updated bg-black to bg-background and text-zinc-200 to text-foreground */
     <main className="min-h-screen bg-background px-6 pt-24 pb-12 md:pt-32 md:pb-20 font-sans text-foreground transition-colors duration-300">
       <div className="mx-auto max-w-2xl">
         
@@ -131,9 +150,33 @@ export default function Home() {
 
           {/* --- FEATURED PROJECTS SECTION --- */}
           <section className="space-y-8">
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">Featured Projects</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">Featured Projects</h2>
+              
+              {/* --- PAGINATION CONTROLS --- */}
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                  className="p-1 rounded-md border border-zinc-200 dark:border-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+                </button>
+                <span className="text-xs font-mono text-zinc-500">
+                  {currentPage} / {totalPages}
+                </span>
+                <button 
+                  onClick={nextPage}
+                  disabled={currentPage === totalPages}
+                  className="p-1 rounded-md border border-zinc-200 dark:border-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                >
+                  <ChevronRight className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-4">
-              {PROJECTS.map((project) => (
+              {currentProjects.map((project) => (
                 <Link 
                   key={project.title}
                   href={project.link} 
