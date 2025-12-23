@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/ui/Navbar"; // Adjusted path based on your folder structure
+import Navbar from "@/components/ui/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import PortfolioChat from "@/components/PortfolioChat";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +26,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Global Navigation */}
           <Navbar />
-          {children}
+          
+          {/* Main Page Content */}
+          <div className="relative z-0">
+            {children}
+          </div>
+
+          {/* AI Assistant - Floating Chatbot (Absolute Bottom Layer) */}
+          <PortfolioChat />
         </ThemeProvider>
       </body>
     </html>
