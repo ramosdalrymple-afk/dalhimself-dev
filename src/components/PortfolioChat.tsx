@@ -2,18 +2,47 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Bot, Code2, Terminal, Copy, Check, Briefcase, User, Sparkles } from "lucide-react";
+import { X, Send, Bot, Code2, Terminal, Copy, Check, Briefcase, User, Sparkles, Cpu } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 export default function PortfolioChat() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ role: "user" | "model"; text: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // --- REFINED PROMPTS (UX & Web3 Focused) ---
+  // --- REFINED LOADING STATUS ---
+  const [loadingStatus, setLoadingStatus] = useState("DALBOT IS THINKING");
+  
+  useEffect(() => {
+    if (isLoading) {
+      const statuses = [
+        "DALBOT IS THINKING",
+        "RECALLING PROJECTS",
+        "GENERATING RESPONSE"
+      ];
+      let i = 0;
+      const interval = setInterval(() => {
+        i++;
+        setLoadingStatus(statuses[i % statuses.length]);
+      }, 1500);
+      return () => clearInterval(interval);
+    }
+  }, [isLoading]);
+
+  // --- TOOLTIP TIMING ---
+  useEffect(() => {
+    const timer = setTimeout(() => setShowHint(true), 2000);
+    const hideTimer = setTimeout(() => setShowHint(false), 10000);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
+
   const SUGGESTED_PROMPTS = [
     { 
       label: "About Me", 
@@ -41,7 +70,6 @@ export default function PortfolioChat() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isLoading]);
 
-  // --- WELCOME MESSAGE (Branded) ---
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([{ 
@@ -49,6 +77,7 @@ export default function PortfolioChat() {
         text: "System Online. I am **DalBot**, the Digital Twin of Dalrymple Ramos.\n\nI build at the intersection of **Sui Move** logic and **High-Fidelity UI/UX**. Ask me about **Beats Music**, **The Vault**, or my design philosophy!" 
       }]);
     }
+    if (isOpen) setShowHint(false);
   }, [isOpen, messages.length]);
 
   const copyLinkedIn = () => {
@@ -74,11 +103,7 @@ export default function PortfolioChat() {
       });
       
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Brain synchronization failed.");
-      }
-
+      if (!res.ok) throw new Error(data.error || "Brain synchronization failed.");
       setMessages(prev => [...prev, { role: "model", text: data.text }]);
     } catch (err: any) {
       setMessages(prev => [...prev, { 
@@ -92,7 +117,24 @@ export default function PortfolioChat() {
 
   return (
     <div className="fixed bottom-6 right-6 z-[100]">
-      {/* --- SONAR PULSE EFFECT --- */}
+      {/* --- GREETING TOOLTIP --- */}
+      <AnimatePresence>
+        {showHint && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: 20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.95 }}
+            className="absolute right-20 bottom-2 whitespace-nowrap bg-zinc-900 border border-zinc-800 text-zinc-400 text-[11px] px-4 py-2 rounded-xl shadow-2xl pointer-events-none font-mono tracking-wider uppercase flex items-center gap-2"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            SYSTEM ONLINE: <span className="text-white">ASK DALBOT</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="relative group">
         <AnimatePresence>
           {!isOpen && (
@@ -100,7 +142,7 @@ export default function PortfolioChat() {
               initial={{ scale: 1, opacity: 0.5 }}
               animate={{ scale: [1, 1.4, 1.6], opacity: [0.5, 0.3, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-              className="absolute inset-0 rounded-full bg-blue-500/40 z-[-1]"
+              className="absolute inset-0 rounded-full bg-white/20 z-[-1]"
             />
           )}
         </AnimatePresence>
@@ -112,7 +154,7 @@ export default function PortfolioChat() {
           className={`relative z-10 p-4 rounded-full shadow-2xl border transition-all duration-300 ${
             isOpen 
             ? "bg-zinc-900 border-zinc-800 text-white" 
-            : "bg-zinc-900 border-blue-500/50 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+            : "bg-zinc-900 border-zinc-700 text-white shadow-[0_0_20px_rgba(255,255,255,0.05)]"
           }`}
         >
           {isOpen ? <X size={24} /> : <Terminal size={24} />}
@@ -127,11 +169,11 @@ export default function PortfolioChat() {
             exit={{ opacity: 0, y: 20 }} 
             className="absolute bottom-20 right-0 w-[350px] sm:w-[400px] h-[580px] bg-zinc-950/90 backdrop-blur-xl border border-zinc-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden"
           >
-            {/* --- HEADER (Glassmorphism + Gradient) --- */}
+            {/* Header */}
             <div className="p-4 bg-zinc-900/50 backdrop-blur-md text-white flex justify-between items-center border-b border-zinc-800">
               <span className="flex items-center gap-2 font-mono text-xs tracking-tighter uppercase font-bold">
-                <Bot size={16} className="text-blue-500 animate-pulse"/> 
-                <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent italic">
+                <Bot size={16} className="text-white animate-pulse"/> 
+                <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent italic">
                   DalBot v1.1.1
                 </span>
               </span>
@@ -144,12 +186,13 @@ export default function PortfolioChat() {
               </button>
             </div>
             
+            {/* Chat Area */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   <div className={`p-3 rounded-2xl text-[13px] leading-relaxed shadow-sm transition-all ${
                     msg.role === 'user' 
-                    ? 'bg-blue-600/10 text-blue-100 border border-blue-500/30 ml-8' 
+                    ? 'bg-zinc-100 text-zinc-900 font-medium ml-8' 
                     : 'bg-zinc-900 text-zinc-100 border border-zinc-800 mr-8'
                   }`}>
                     <div className="prose prose-invert prose-sm max-w-none prose-p:mb-2 prose-strong:font-bold">
@@ -159,13 +202,14 @@ export default function PortfolioChat() {
                 </div>
               ))}
               
+              {/* Suggested Prompts - Stays visible after welcome message */}
               {messages.length === 1 && !isLoading && (
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {SUGGESTED_PROMPTS.map((prompt, idx) => (
                     <button 
                       key={idx} 
                       onClick={() => handleSend(prompt.text)} 
-                      className="p-3 text-[10px] bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-400 hover:text-blue-400 hover:border-blue-500/30 transition-all text-left flex flex-col gap-2"
+                      className="p-3 text-[10px] bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-500 transition-all text-left flex flex-col gap-2"
                     >
                       {prompt.icon} <span className="font-medium text-zinc-300">{prompt.label}</span>
                     </button>
@@ -173,27 +217,39 @@ export default function PortfolioChat() {
                 </div>
               )}
 
+              {/* Enhanced Thinking Indicator - Refined Statuses */}
               {isLoading && (
-                <div className="flex items-center gap-1.5 ml-4">
-                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                <div className="flex flex-col gap-2 ml-2 mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-zinc-900 rounded-lg border border-zinc-800">
+                      <Cpu size={14} className="text-zinc-400 animate-spin [animation-duration:3s]" />
+                    </div>
+                    <span className="text-[10px] font-mono text-zinc-500 tracking-[0.2em] uppercase animate-pulse">
+                      {loadingStatus}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5 ml-10">
+                    <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1 h-1 bg-white rounded-full" />
+                    <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1 h-1 bg-white rounded-full" />
+                    <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1 h-1 bg-white rounded-full" />
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* --- INPUT AREA (Refined) --- */}
+            {/* Input Area */}
             <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 backdrop-blur-md flex gap-2">
               <input 
                 value={input} 
                 onChange={(e) => setInput(e.target.value)} 
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()} 
                 placeholder="Message DalBot..." 
-                className="flex-1 bg-zinc-950 text-white text-sm px-4 py-2 rounded-full outline-none border border-zinc-800 focus:border-blue-500/50 transition-all placeholder:text-zinc-700" 
+                className="flex-1 bg-zinc-950 text-white text-sm px-4 py-2 rounded-full outline-none border border-zinc-800 focus:border-zinc-500 transition-all placeholder:text-zinc-700" 
               />
               <button 
                 onClick={() => handleSend()} 
-                className="p-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-500 transition-all shadow-lg active:scale-90" 
+                className="p-2.5 bg-white text-black rounded-full hover:bg-zinc-200 transition-all shadow-lg active:scale-90" 
                 disabled={isLoading}
               >
                 <Send size={16} />
@@ -203,5 +259,5 @@ export default function PortfolioChat() {
         )}
       </AnimatePresence>
     </div>
-  );
+  );    
 }
